@@ -358,6 +358,10 @@ automl.args.test <- function() {
     expect_equal(length(get_partitioned_models(aml)$se), 2)
   }
 
+  test_max_model_runtime_secs <- function() {
+
+  }
+
   test_max_models <- function() {
     print("Check that automl get interrupted after `max_models`")
     ds <- import_dataset()

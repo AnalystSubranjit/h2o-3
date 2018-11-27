@@ -645,8 +645,12 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
     public long _start_time;
     public long _end_time;
     public long _run_time;
+    public long _total_run_time; // includes building of cv models
     protected void startClock() { _start_time = System.currentTimeMillis(); }
-    protected void stopClock()  { _end_time   = System.currentTimeMillis(); _run_time = _end_time - _start_time; }
+    protected void stopClock()  {
+      _end_time   = System.currentTimeMillis();
+      _total_run_time = _run_time = _end_time - _start_time;
+    }
 
     public Output(){this(false,false,false);}
     public Output(boolean hasWeights, boolean hasOffset, boolean hasFold) {
@@ -841,6 +845,7 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
     if (_output != null)
       _output.startClock();
     _dist = isSupervised() && _output.nclasses() == 1 ? new Distribution(_parms) : null;
+    Log.info("Starting model "+ selfKey);
   }
 
   /**

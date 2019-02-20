@@ -10,8 +10,8 @@ This test is used to check arguments passed into H2OAutoML along with different 
 """
 max_models = 2
 
-def import_dataset(seed=0):
-    df = h2o.import_file(path=pyunit_utils.locate("smalldata/logreg/prostate.csv"))
+def import_dataset(seed=0, larger=False):
+    df = h2o.import_file(path=pyunit_utils.locate("smalldata/prostate/prostate{}.csv".format("_complete" if larger else "")))
     target = "CAPSULE"
     df[target] = df[target].asfactor()
     #Split frames
@@ -219,22 +219,25 @@ def test_automl_stops_after_max_runtime_secs():
     end = time.time()
     assert abs(end-start - max_runtime_secs) < cancel_tolerance_secs, end-start
 
+
 def test_no_model_takes_more_than_max_model_runtime_secs():
     """
     currently disabled: there's no way to test this param here as soon as userfeedback is not available on client side
     """
     print("Check that individual model get interrupted after `max_model_runtime_secs`")
-    max_runtime_secs = 60
-    max_model_runtime_secs = 2
-    ds = import_dataset(seed=1)
-    aml = H2OAutoML(project_name="py_aml_max_model_runtime_secs", seed=1,
-                    max_model_runtime_secs=max_model_runtime_secs, max_runtime_secs=max_runtime_secs,
-                    max_models=10, exclude_algos=['DeepLearning'])
-    start = time.time()
-    aml.train(y=ds['target'], training_frame=ds['train'])
-    end = time.time()
-    print(end - start)
-    print(aml.leaderboard)
+    ds = import_dataset(seed=1, larger=True)
+    max_runtime_secs = 30
+    models_count = {}
+    for max_model_runtime_secs in [0, 3, max_runtime_secs]:
+        aml = H2OAutoML(project_name="py_aml_max_model_runtime_secs_{}".format(max_model_runtime_secs), seed=1,
+                        max_model_runtime_secs=max_model_runtime_secs, 
+                        max_runtime_secs=max_runtime_secs)
+        aml.train(y=ds['target'], training_frame=ds['train'])
+        models_count[max_model_runtime_secs] = len(aml.leaderboard)
+        print(aml.leaderboard)
+    # there may be one model difference as reproducibility is not perfectly guaranteed in time-bound runs
+    assert abs(models_count[0] - models_count[max_runtime_secs]) <= 1
+    assert abs(models_count[0] - models_count[3]) > 1
 
 
 def test_stacked_ensembles_are_trained_after_timeout():
@@ -278,28 +281,23 @@ def test_stacked_ensembles_are_trained_after_max_models():
     # Add a test that checks fold_column like in runit
 
 
-tests = [
-    test_early_stopping_args,
-    test_no_x_train_set_only,
-    test_no_x_train_and_validation_sets,
-    test_no_x_train_and_test_sets,
-    test_no_x_train_and_validation_and_test_sets,
-    test_no_x_y_as_idx_train_and_validation_and_test_sets,
-    test_predict_on_train_set,
-    test_nfolds_param,
-    test_nfolds_eq_0,
-    test_balance_classes,
-    test_nfolds_default_and_fold_assignements_skipped_by_default,
-    test_keep_cross_validation_fold_assignment_enabled_with_nfolds_neq_0,
-    test_keep_cross_validation_fold_assignment_enabled_with_nfolds_eq_0,
-    test_automl_stops_after_max_runtime_secs,
-    # test_no_model_takes_more_than_max_model_runtime_secs,
-    test_stacked_ensembles_are_trained_after_timeout,
-    test_automl_stops_after_max_models,
-    test_stacked_ensembles_are_trained_after_max_models,
-]
-
-if __name__ == "__main__":
-    for test in tests: pyunit_utils.standalone_test(test)
-else:
-    for test in tests: test()
+pyunit_utils.run_tests([
+    # test_early_stopping_args,
+    # test_no_x_train_set_only,
+    # test_no_x_train_and_validation_sets,
+    # test_no_x_train_and_test_sets,
+    # test_no_x_train_and_validation_and_test_sets,
+    # test_no_x_y_as_idx_train_and_validation_and_test_sets,
+    # test_predict_on_train_set,
+    # test_nfolds_param,
+    # test_nfolds_eq_0,
+    # test_balance_classes,
+    # test_nfolds_default_and_fold_assignements_skipped_by_default,
+    # test_keep_cross_validation_fold_assignment_enabled_with_nfolds_neq_0,
+    # test_keep_cross_validation_fold_assignment_enabled_with_nfolds_eq_0,
+    # test_automl_stops_after_max_runtime_secs,
+    test_no_model_takes_more_than_max_model_runtime_secs,
+    # test_stacked_ensembles_are_trained_after_timeout,
+    # test_automl_stops_after_max_models,
+    # test_stacked_ensembles_are_trained_after_max_models,
+])

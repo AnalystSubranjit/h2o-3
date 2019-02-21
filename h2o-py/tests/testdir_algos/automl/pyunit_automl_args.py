@@ -10,8 +10,9 @@ This test is used to check arguments passed into H2OAutoML along with different 
 """
 max_models = 2
 
+
 def import_dataset(seed=0, larger=False):
-    df = h2o.import_file(path=pyunit_utils.locate("smalldata/prostate/prostate{}.csv".format("_complete" if larger else "")))
+    df = h2o.import_file(path=pyunit_utils.locate("smalldata/prostate/{}".format("prostate_complete.csv.zip" if larger else "prostate.csv")))
     target = "CAPSULE"
     df[target] = df[target].asfactor()
     #Split frames
@@ -276,28 +277,27 @@ def test_stacked_ensembles_are_trained_after_max_models():
     assert len(se) == 2, "StackedEnsemble should still be trained after max models have been reached"
 
 
-
     # TO DO  PUBDEV-5676
     # Add a test that checks fold_column like in runit
 
 
 pyunit_utils.run_tests([
-    # test_early_stopping_args,
-    # test_no_x_train_set_only,
-    # test_no_x_train_and_validation_sets,
-    # test_no_x_train_and_test_sets,
-    # test_no_x_train_and_validation_and_test_sets,
-    # test_no_x_y_as_idx_train_and_validation_and_test_sets,
-    # test_predict_on_train_set,
-    # test_nfolds_param,
-    # test_nfolds_eq_0,
-    # test_balance_classes,
-    # test_nfolds_default_and_fold_assignements_skipped_by_default,
-    # test_keep_cross_validation_fold_assignment_enabled_with_nfolds_neq_0,
-    # test_keep_cross_validation_fold_assignment_enabled_with_nfolds_eq_0,
-    # test_automl_stops_after_max_runtime_secs,
+    test_early_stopping_args,
+    test_no_x_train_set_only,
+    test_no_x_train_and_validation_sets,
+    test_no_x_train_and_test_sets,
+    test_no_x_train_and_validation_and_test_sets,
+    test_no_x_y_as_idx_train_and_validation_and_test_sets,
+    test_predict_on_train_set,
+    test_nfolds_param,
+    test_nfolds_eq_0,
+    test_balance_classes,
+    test_nfolds_default_and_fold_assignements_skipped_by_default,
+    test_keep_cross_validation_fold_assignment_enabled_with_nfolds_neq_0,
+    test_keep_cross_validation_fold_assignment_enabled_with_nfolds_eq_0,
+    test_automl_stops_after_max_runtime_secs,
     test_no_model_takes_more_than_max_runtime_secs_per_model,
-    # test_stacked_ensembles_are_trained_after_timeout,
-    # test_automl_stops_after_max_models,
-    # test_stacked_ensembles_are_trained_after_max_models,
+    test_stacked_ensembles_are_trained_after_timeout,
+    test_automl_stops_after_max_models,
+    test_stacked_ensembles_are_trained_after_max_models,
 ])

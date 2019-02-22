@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /home/hive
+sudo -E -u hive nohup ${HIVE_HOME}/bin/hiveserver2 > /home/hive/hive.log & sleep 180

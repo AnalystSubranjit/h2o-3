@@ -14,12 +14,6 @@ ARG PATH_PREFIX='.'
 ARG DEFAULT_USER_UID=2117
 ARG PYTHON_VERSIONS='2.7,3.6'
 ARG JAVA_VERSIONS='8'
-ARG HIVE_VERSION
-RUN \
-    if [ -z $HIVE_VERSION ]; then \
-        echo "build-arg HIVE_VERSION must be set"; \
-        exit 1; \
-    fi
 ARG AWS_ACCESS_KEY
 ARG AWS_SECRET_ACCESS_KEY
 
@@ -27,7 +21,7 @@ ENV DISTRIBUTION='cdh' \
     HADOOP_HOME=/usr/lib/hadoop \
     HADOOP_CONF_DIR='/etc/hadoop/conf.pseudo' \
     MASTER='yarn-client' \
-    HIVE_HOME=/home/hive/apache-hive-${HIVE_VERSION}-bin
+    HIVE_HOME=/usr/lib/hive
 
 RUN \
     apt-get update && \

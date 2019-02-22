@@ -73,7 +73,8 @@
             /usr/hdp/${HDP_VERSION}/hadoop-hdfs-client/*,
             /usr/hdp/${HDP_VERSION}/hadoop-hdfs-client/lib/*,
             /usr/hdp/${HDP_VERSION}/hadoop-yarn-client/*,
-            /usr/hdp/${HDP_VERSION}/hadoop-yarn-client/lib/*
+            /usr/hdp/${HDP_VERSION}/hadoop-yarn-client/lib/*,
+            $HIVE_HOME/conf,$HIVE_HOME/lib/*
         </value>
     </property>
 

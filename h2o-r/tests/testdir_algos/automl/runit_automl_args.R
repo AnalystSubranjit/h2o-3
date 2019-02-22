@@ -416,10 +416,8 @@ automl.args.test <- function() {
     test_max_runtime_secs_per_model,
     test_max_models
   )
-   test_max_runtime_secs_per_model()
 
-  # lapply(tests, function(test) print(system.time(test()))) #need to monitor why this test suite is taking so long in client mode
+  lapply(tests, function(test) print(system.time(test()))) #need to monitor why this test suite is taking so long in client mode
 }
 
-# doTest("AutoML Args Test", automl.args.test)
-automl.args.test()
+doTest("AutoML Args Test", automl.args.test)
